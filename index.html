@@ -1,0 +1,1784 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>ภารกิจเติมพลังรัก 💖</title>
+
+  <!-- โหลดฟอนต์ภาษาไทยน่ารักๆ จาก Google Fonts (Mali และ Kanit) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&family=Mali:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* =========================================================================
+       1. ตัวแปรสีและค่าเริ่มต้น (CSS Variables & Reset)
+       โทนสีพาสเทล ชมพูอ่อน - ครีม - แดงกุหลาบ ดูอบอุ่นและสบายตา
+    ========================================================================= */
+    :root {
+      --bg-pink: #ffe6ef;
+      --bg-cream: #fff9f2;
+      --bg-peach: #ffdfd3;
+      --rose-primary: #ff5c8a;
+      --rose-dark: #e03e6d;
+      --rose-soft: #ff9ebb;
+      --gold-accent: #ffb703;
+      --text-main: #592e3b;
+      --text-muted: #8f5c6b;
+      --card-bg: rgba(255, 255, 255, 0.88);
+      --card-border: rgba(255, 158, 187, 0.45);
+      --shadow-soft: 0 14px 35px rgba(224, 62, 109, 0.15);
+      --font-cute: 'Mali', cursive, sans-serif;
+      --font-clean: 'Kanit', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden; /* ป้องกันการเลื่อนจอขณะเล่นเกม */
+      font-family: var(--font-cute);
+      color: var(--text-main);
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+
+    /* พื้นหลังไล่เฉดสีพาสเทลนุ่มนวลพร้อมอนิเมชันขยับเบาๆ */
+    body {
+      background: linear-gradient(135deg, var(--bg-pink) 0%, var(--bg-cream) 50%, var(--bg-peach) 100%);
+      background-size: 200% 200%;
+      animation: softGradientShift 12s ease infinite;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    @keyframes softGradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* =========================================================================
+       2. พื้นหลังหัวใจลอยจางๆ และแคนวาสพลุฉลอง
+    ========================================================================= */
+    #bg-hearts-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .bg-heart {
+      position: absolute;
+      bottom: -40px;
+      opacity: 0;
+      animation: floatBgHeart linear infinite;
+      filter: blur(0.4px);
+    }
+
+    @keyframes floatBgHeart {
+      0% {
+        transform: translateY(0) translateX(0) rotate(0deg) scale(0.8);
+        opacity: 0;
+      }
+      15% { opacity: 0.35; }
+      85% { opacity: 0.3; }
+      100% {
+        transform: translateY(-110vh) translateX(30px) rotate(25deg) scale(1.15);
+        opacity: 0;
+      }
+    }
+
+    /* แคนวาสสำหรับพลุหัวใจและกระดาษโปรยในด่านที่ 3 */
+    #celebration-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 40;
+      display: none;
+    }
+
+    /* =========================================================================
+       3. ปุ่มเปิด/ปิดเสียงมุมขวาบน
+    ========================================================================= */
+    .sound-toggle-btn {
+      position: fixed;
+      top: 14px;
+      right: 14px;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.9);
+      border: 2px solid var(--rose-soft);
+      color: var(--rose-dark);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-family: var(--font-clean);
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(224, 62, 109, 0.14);
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+
+    .sound-toggle-btn:hover {
+      transform: translateY(-2px);
+      background: #fff;
+    }
+
+    .sound-toggle-btn:active {
+      transform: scale(0.94);
+    }
+
+    /* =========================================================================
+       4. โครงสร้างหลักของแต่ละหน้าจอ (Screens)
+    ========================================================================= */
+    .app-wrapper {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+    }
+
+    .screen {
+      width: 100%;
+      max-width: 540px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transform: translateY(14px) scale(0.98);
+      transition: opacity 0.45s ease, transform 0.45s ease;
+    }
+
+    .screen.active {
+      display: flex;
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    /* การ์ดสไตล์พาสเทลอบอุ่น */
+    .cute-card {
+      width: 100%;
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 2.5px solid var(--card-border);
+      border-radius: 30px;
+      padding: 32px 24px;
+      text-align: center;
+      box-shadow: var(--shadow-soft), inset 0 2px 0 rgba(255, 255, 255, 0.8);
+      position: relative;
+    }
+
+    /* =========================================================================
+       5. สไตล์ปุ่มกดแบบนุ่มนิ่ม (Bubble Buttons)
+    ========================================================================= */
+    .btn {
+      font-family: var(--font-cute);
+      font-weight: 700;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, background 0.2s ease;
+      position: relative;
+      outline: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #ff759f 0%, var(--rose-primary) 55%, var(--rose-dark) 100%);
+      color: #ffffff;
+      padding: 15px 34px;
+      font-size: 1.15rem;
+      box-shadow: 0 8px 20px rgba(224, 62, 109, 0.35), 0 4px 0 #c92a58;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 12px 24px rgba(224, 62, 109, 0.42), 0 5px 0 #c92a58;
+    }
+
+    .btn-primary:active {
+      transform: translateY(2px) scale(0.98);
+      box-shadow: 0 4px 10px rgba(224, 62, 109, 0.3), 0 1px 0 #c92a58;
+    }
+
+    .btn-secondary {
+      background: #ffffff;
+      color: var(--rose-dark);
+      border: 2.5px solid var(--rose-soft);
+      padding: 13px 26px;
+      font-size: 1.05rem;
+      box-shadow: 0 6px 14px rgba(224, 62, 109, 0.12), 0 3px 0 var(--rose-soft);
+    }
+
+    .btn-secondary:hover {
+      background: #fff4f7;
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary:active {
+      transform: translateY(2px);
+    }
+
+    /* =========================================================================
+       6. หน้าแรก (Start Screen)
+    ========================================================================= */
+    .hero-badge {
+      display: inline-block;
+      background: #fff0f5;
+      color: var(--rose-dark);
+      border: 1.5px dashed var(--rose-soft);
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-family: var(--font-clean);
+      font-size: 0.9rem;
+      margin-bottom: 14px;
+    }
+
+    .hero-heart-icon {
+      font-size: 4.4rem;
+      line-height: 1;
+      margin-bottom: 12px;
+      display: inline-block;
+      animation: heartbeat 1.4s ease-in-out infinite;
+      filter: drop-shadow(0 8px 14px rgba(255, 92, 138, 0.3));
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      15% { transform: scale(1.18); }
+      30% { transform: scale(1); }
+      45% { transform: scale(1.13); }
+      65% { transform: scale(1); }
+    }
+
+    .game-title {
+      font-size: clamp(1.7rem, 5.5vw, 2.3rem);
+      color: var(--rose-dark);
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }
+
+    .game-desc {
+      font-family: var(--font-clean);
+      font-size: 1rem;
+      line-height: 1.65;
+      color: var(--text-muted);
+      margin-bottom: 22px;
+    }
+
+    .legend-box {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 26px;
+      background: #fff8fa;
+      padding: 12px 14px;
+      border-radius: 18px;
+      border: 1.5px solid #ffd6e3;
+      font-family: var(--font-clean);
+      font-size: 0.88rem;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: #ffffff;
+      padding: 5px 11px;
+      border-radius: 999px;
+      box-shadow: 0 2px 6px rgba(224, 62, 109, 0.08);
+    }
+
+    /* =========================================================================
+       7. ด่านที่ 1: มินิเกมเก็บหัวใจ (Catch the Hearts)
+    ========================================================================= */
+    #screen-game {
+      max-width: 760px;
+      height: 100%;
+      justify-content: flex-start;
+      padding-top: 46px; /* เว้นที่ให้ปุ่มเสียงด้านบน */
+      padding-bottom: 8px;
+    }
+
+    .hud-panel {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.92);
+      border: 2px solid var(--card-border);
+      border-radius: 22px;
+      padding: 12px 18px;
+      box-shadow: 0 8px 22px rgba(224, 62, 109, 0.12);
+      margin-bottom: 12px;
+      z-index: 20;
+    }
+
+    .hud-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: var(--rose-dark);
+    }
+
+    .hud-score-badge {
+      background: #fff0f5;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-family: var(--font-clean);
+      font-size: 0.9rem;
+      color: var(--text-main);
+    }
+
+    .meter-track {
+      width: 100%;
+      height: 22px;
+      background: #ffe3ec;
+      border-radius: 999px;
+      overflow: hidden;
+      padding: 3px;
+      box-shadow: inset 0 2px 6px rgba(224, 62, 109, 0.15);
+      position: relative;
+    }
+
+    .meter-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #ff8fab 0%, #ff5c8a 50%, #ff2a6d 100%);
+      transition: width 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* แสงวิบวับวิ่งผ่านหลอดพลังรัก */
+    .meter-fill::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+      animation: shimmer 1.8s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    /* พื้นที่เล่นเกมเก็บหัวใจ */
+    .game-arena {
+      width: 100%;
+      flex: 1;
+      min-height: 300px;
+      background: rgba(255, 255, 255, 0.52);
+      border: 2.5px dashed rgba(255, 133, 169, 0.6);
+      border-radius: 28px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 0 28px rgba(255, 182, 203, 0.25);
+    }
+
+    /* เอฟเฟกต์หน้าจอสั่นเบาๆ เมื่อกดโดนก้อนเมฆงอน */
+    .game-arena.shake {
+      animation: arenaShake 0.38s ease;
+    }
+
+    @keyframes arenaShake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px) rotate(-0.6deg); }
+      40% { transform: translateX(8px) rotate(0.6deg); }
+      60% { transform: translateX(-6px) rotate(-0.4deg); }
+      80% { transform: translateX(6px) rotate(0.4deg); }
+    }
+
+    /* ไอเทมที่ลอยอยู่ในเกม (หัวใจ / หัวใจทอง / ก้อนเมฆงอน) */
+    .spawn-item {
+      position: absolute;
+      bottom: -80px;
+      font-size: 3rem;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      transition: transform 0.12s ease;
+      will-change: transform, bottom;
+      z-index: 15;
+    }
+
+    .spawn-item:active {
+      transform: scale(1.25);
+    }
+
+    .spawn-item.golden {
+      font-size: 3.15rem;
+      filter: drop-shadow(0 0 12px rgba(255, 183, 3, 0.85));
+      background: radial-gradient(circle, rgba(255, 236, 153, 0.55) 0%, transparent 70%);
+    }
+
+    .spawn-item.cloud {
+      font-size: 2.9rem;
+      filter: drop-shadow(0 4px 8px rgba(100, 110, 140, 0.35));
+    }
+
+    .spawn-item.normal {
+      filter: drop-shadow(0 6px 10px rgba(255, 92, 138, 0.32));
+    }
+
+    /* ข้อความลอยน่ารักๆ ตอนกดโดนไอเทม */
+    .floating-feedback {
+      position: absolute;
+      pointer-events: none;
+      font-family: var(--font-cute);
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 6px 14px;
+      border-radius: 999px;
+      white-space: nowrap;
+      z-index: 30;
+      transform: translate(-50%, -50%);
+      animation: floatUpFade 1.15s ease-out forwards;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .floating-feedback.sweet {
+      background: #ffffff;
+      color: var(--rose-dark);
+      border: 2px solid #ffb3c6;
+    }
+
+    .floating-feedback.golden {
+      background: #fff9db;
+      color: #d97706;
+      border: 2px solid #ffd43b;
+      font-size: 1.08rem;
+    }
+
+    .floating-feedback.tease {
+      background: #f1f5f9;
+      color: #475569;
+      border: 2px solid #cbd5e1;
+    }
+
+    @keyframes floatUpFade {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -20%) scale(0.75);
+      }
+      20% {
+        opacity: 1;
+        transform: translate(-50%, -55%) scale(1.06);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -145%) scale(0.95);
+      }
+    }
+
+    /* เศษหัวใจ/ดาวแตกกระจายตอนกด */
+    .pop-particle {
+      position: absolute;
+      pointer-events: none;
+      font-size: 1.15rem;
+      z-index: 25;
+      animation: burstParticle 0.65s ease-out forwards;
+    }
+
+    @keyframes burstParticle {
+      0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0.2) rotate(var(--rot));
+      }
+    }
+
+    /* ป้ายแจ้งเตือนตอนหลอดความรักเต็ม 100% */
+    .stage-clear-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 240, 246, 0.88);
+      backdrop-filter: blur(4px);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 35;
+      text-align: center;
+      padding: 20px;
+      animation: fadeInPop 0.35s ease;
+    }
+
+    .stage-clear-overlay.show {
+      display: flex;
+    }
+
+    @keyframes fadeInPop {
+      from { opacity: 0; transform: scale(0.92); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* =========================================================================
+       8. ด่านที่ 2: คำถามวัดใจ (The Playful Finale)
+    ========================================================================= */
+    .question-mascot {
+      font-size: 4.2rem;
+      margin-bottom: 10px;
+      display: inline-block;
+      animation: gentleBounce 2.2s ease-in-out infinite;
+    }
+
+    @keyframes gentleBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-9px); }
+    }
+
+    .question-title {
+      font-size: clamp(1.75rem, 6vw, 2.3rem);
+      color: var(--rose-dark);
+      margin-bottom: 8px;
+    }
+
+    .question-subtitle {
+      font-family: var(--font-clean);
+      color: var(--text-muted);
+      font-size: 1rem;
+      margin-bottom: 28px;
+    }
+
+    .choice-buttons-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      min-height: 82px;
+      position: relative;
+    }
+
+    #btn-yes {
+      z-index: 20;
+      transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+    }
+
+    #btn-no {
+      z-index: 60;
+      background: #fff;
+      color: #7c5c66;
+      border: 2px solid #e2c2cc;
+      padding: 13px 24px;
+      font-size: 1rem;
+      box-shadow: 0 5px 12px rgba(124, 92, 102, 0.14);
+      white-space: nowrap;
+      transition: left 0.22s cubic-bezier(0.22, 1, 0.36, 1), top 0.22s cubic-bezier(0.22, 1, 0.36, 1), transform 0.15s ease;
+    }
+
+    /* คลาสเมื่อปุ่ม "ไม่รักหรอก" เริ่มวิ่งหนีทั่วหน้าจอ */
+    #btn-no.dodging {
+      position: fixed;
+      margin: 0;
+    }
+
+    .dodge-hint {
+      margin-top: 20px;
+      min-height: 24px;
+      font-family: var(--font-clean);
+      font-size: 0.92rem;
+      color: var(--rose-primary);
+      font-weight: 500;
+    }
+
+    /* =========================================================================
+       9. ด่านที่ 3: จดหมายบอกรักและหน้าฉลอง (Love Letter & Celebration)
+    ========================================================================= */
+    #screen-letter {
+      max-width: 560px;
+      max-height: 92vh;
+    }
+
+    .letter-card {
+      background: linear-gradient(180deg, #ffffff 0%, #fff9fb 100%);
+      border: 3px solid #ffc2d4;
+      border-radius: 28px;
+      padding: 26px 24px 24px;
+      box-shadow: 0 18px 40px rgba(224, 62, 109, 0.18), 0 0 0 6px rgba(255, 255, 255, 0.55);
+      max-height: 86vh;
+      overflow-y: auto;
+      width: 100%;
+      text-align: center;
+      position: relative;
+      z-index: 50;
+    }
+
+    /* สไตล์แถบเลื่อนสวยๆ กรณีข้อความจดหมายยาวบนมือถือจอเล็ก */
+    .letter-card::-webkit-scrollbar {
+      width: 6px;
+    }
+    .letter-card::-webkit-scrollbar-thumb {
+      background: #ffc2d4;
+      border-radius: 999px;
+    }
+
+    .beating-heart-seal {
+      font-size: 3.4rem;
+      display: inline-block;
+      margin-bottom: 6px;
+      animation: heartbeat 1.15s ease-in-out infinite;
+    }
+
+    .letter-heading {
+      font-size: clamp(1.45rem, 5vw, 1.95rem);
+      color: var(--rose-dark);
+      margin-bottom: 14px;
+    }
+
+    .letter-paper {
+      background: #fff5f8;
+      border: 1.5px dashed #ff9ebb;
+      border-radius: 20px;
+      padding: 18px 18px;
+      text-align: left;
+      font-family: var(--font-clean);
+      font-size: 0.98rem;
+      line-height: 1.8;
+      color: var(--text-main);
+      margin-bottom: 18px;
+    }
+
+    .letter-paper p {
+      margin-bottom: 10px;
+    }
+
+    .letter-paper p:last-child {
+      margin-bottom: 0;
+    }
+
+    .letter-signature {
+      text-align: right;
+      font-family: var(--font-cute);
+      font-weight: 700;
+      color: var(--rose-dark);
+      font-size: 1.05rem;
+      margin-top: 12px;
+    }
+
+    .hug-counter-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #fff0f5;
+      color: var(--rose-dark);
+      border: 1.5px solid #ffb3c6;
+      border-radius: 999px;
+      padding: 6px 16px;
+      font-family: var(--font-clean);
+      font-size: 0.92rem;
+      font-weight: 500;
+      margin-bottom: 16px;
+      transition: transform 0.2s ease;
+    }
+
+    .hug-counter-pill.bump {
+      transform: scale(1.12);
+    }
+
+    .letter-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    /* อีโมจิกอดพุ่งขึ้นตอนกดปุ่มส่งกอด */
+    .flying-hug {
+      position: fixed;
+      pointer-events: none;
+      font-size: 2.3rem;
+      z-index: 90;
+      animation: flyHugUp 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    @keyframes flyHugUp {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, 0) scale(0.5) rotate(0deg);
+      }
+      18% {
+        opacity: 1;
+        transform: translate(-50%, -35px) scale(1.2) rotate(var(--hug-rot));
+      }
+      100% {
+        opacity: 0;
+        transform: translate(calc(-50% + var(--hug-x)), -220px) scale(0.95) rotate(calc(var(--hug-rot) * -1.4));
+      }
+    }
+
+    /* ปรับแต่งสำหรับหน้าจอมือถือขนาดเล็ก */
+    @media (max-width: 480px) {
+      .cute-card {
+        padding: 24px 18px;
+        border-radius: 24px;
+      }
+
+      .letter-card {
+        padding: 20px 16px;
+      }
+
+      .btn-primary {
+        padding: 13px 26px;
+        font-size: 1.05rem;
+      }
+
+      .spawn-item {
+        width: 62px;
+        height: 62px;
+        font-size: 2.7rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- เลเยอร์พื้นหลังหัวใจลอยจางๆ -->
+  <div id="bg-hearts-layer" aria-hidden="true"></div>
+
+  <!-- แคนวาสสำหรับพลุหัวใจและกระดาษโปรยในด่านที่ 3 -->
+  <canvas id="celebration-canvas" aria-hidden="true"></canvas>
+
+  <!-- ปุ่มเปิด/ปิดเสียงเอฟเฟกต์ (Web Audio API) -->
+  <button id="btn-sound-toggle" class="sound-toggle-btn" type="button" aria-label="เปิดหรือปิดเสียงเอฟเฟกต์">
+    <span id="sound-icon">🔊</span>
+    <span id="sound-label">เสียง: เปิด</span>
+  </button>
+
+  <!-- พื้นที่หลักของแอปเกมทั้ง 3 ด่าน -->
+  <main class="app-wrapper">
+
+    <!-- =======================================================================
+         หน้าแรก: Start Screen
+    ======================================================================= -->
+    <section id="screen-start" class="screen active" aria-label="หน้าเริ่มต้นเกม">
+      <div class="cute-card">
+        <div id="start-badge" class="hero-badge">💌 มีภารกิจพิเศษสำหรับคนน่ารัก</div>
+        <div class="hero-heart-icon" aria-hidden="true">💖</div>
+        <h1 id="start-title" class="game-title">ภารกิจเติมพลังรัก 💖</h1>
+        <p id="start-desc" class="game-desc">
+          ช่วยเก็บหัวใจให้เต็มหลอด 100% เพื่อปลดล็อกข้อความลับสุดพิเศษที่เค้าตั้งใจเขียนให้เธอหน่อยนะ!
+        </p>
+
+        <!-- คำอธิบายไอเทมในเกมแบบสั้นๆ -->
+        <div class="legend-box">
+          <span class="legend-item">💖 +10%</span>
+          <span class="legend-item">💛✨ +20%</span>
+          <span class="legend-item">⛈️ -5%</span>
+        </div>
+
+        <button id="btn-start-game" class="btn btn-primary" type="button">
+          เริ่มเกมเลย! ✨
+        </button>
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         ด่านที่ 1: มินิเกมเก็บหัวใจ (Catch the Hearts)
+    ======================================================================= -->
+    <section id="screen-game" class="screen" aria-label="ด่านที่ 1 มินิเกมเก็บหัวใจ">
+      <!-- แถบแสดงหลอดความรักและคะแนน -->
+      <div class="hud-panel">
+        <div class="hud-top-row">
+          <span>💗 พลังรัก: <strong id="meter-percent-text">0%</strong></span>
+          <span class="hud-score-badge">เก็บได้แล้ว <strong id="heart-count-text">0</strong> ดวง</span>
+        </div>
+        <div class="meter-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="love-meter-bar">
+          <div id="meter-fill" class="meter-fill"></div>
+        </div>
+      </div>
+
+      <!-- พื้นที่เกิดและลอยของหัวใจ -->
+      <div id="game-arena" class="game-arena">
+        <!-- ป้ายฉลองสั้นๆ ก่อนเข้าสู่ด่านที่ 2 -->
+        <div id="stage-clear-overlay" class="stage-clear-overlay">
+          <div style="font-size: 4rem; margin-bottom: 10px;">🎉💖🎉</div>
+          <h2 style="color: var(--rose-dark); font-size: 1.7rem; margin-bottom: 6px;">พลังรักเต็ม 100% แล้ว!</h2>
+          <p style="font-family: var(--font-clean); color: var(--text-muted);">กำลังพาไปสู่ด่านคำถามวัดใจ...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         ด่านที่ 2: คำถามวัดใจ (The Playful Finale)
+    ======================================================================= -->
+    <section id="screen-question" class="screen" aria-label="ด่านที่ 2 คำถามวัดใจ">
+      <div class="cute-card">
+        <div class="question-mascot" aria-hidden="true">🥺💘</div>
+        <h2 id="question-title" class="question-title">รักเค้ามั้ย? 🥺💖</h2>
+        <p id="question-subtitle" class="question-subtitle">
+          ตอบตามความจริงนะ... ห้ามโกหกกันล่ะ!
+        </p>
+
+        <div class="choice-buttons-row">
+          <button id="btn-yes" class="btn btn-primary" type="button">
+            รักมากกก 💖
+          </button>
+          <button id="btn-no" class="btn" type="button">
+            ไม่รักหรอก 😜
+          </button>
+        </div>
+
+        <p id="dodge-hint" class="dodge-hint"></p>
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         ด่านที่ 3: หน้าบอกรักและฉลอง (Love Letter & Celebration)
+    ======================================================================= -->
+    <section id="screen-letter" class="screen" aria-label="ด่านที่ 3 จดหมายบอกรัก">
+      <div class="letter-card">
+        <div class="beating-heart-seal" aria-hidden="true">❤️</div>
+        <h2 id="letter-heading" class="letter-heading">ขอบคุณที่รักกันนะ 💖</h2>
+
+        <div id="letter-body" class="letter-paper">
+          <!-- ข้อความจดหมายจะถูกดึงจาก LOVE_CONFIG มาใส่ตรงนี้อัตโนมัติ -->
+        </div>
+
+        <div id="hug-counter-pill" class="hug-counter-pill">
+          🫂 ส่งกอดให้กันแล้ว <strong id="hug-count-num">0</strong> ครั้ง
+        </div>
+
+        <div class="letter-actions">
+          <button id="btn-send-hug" class="btn btn-primary" type="button">
+            ส่งกอด 🫂
+          </button>
+          <button id="btn-play-again" class="btn btn-secondary" type="button">
+            เล่นใหม่อีกครั้ง ↻
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    /* =========================================================================
+       ⭐ โซนตั้งค่าข้อความของเกม (LOVE_CONFIG) ⭐
+       คุณสามารถแก้ไขชื่อแฟน ข้อความสุ่ม คำถาม และจดหมายบอกรักได้จากตรงนี้เลย!
+    ========================================================================= */
+    const LOVE_CONFIG = {
+      // ชื่อแฟนและชื่อของคุณ
+      partnerName: "คนเก่งของเค้า",
+      senderName: "แฟนที่น่ารักที่สุดของเธอ 💕",
+
+      // ข้อความหน้าแรก (Start Screen)
+      gameTitle: "ภารกิจเติมพลังรัก 💖",
+      startBadge: "💌 มีภารกิจพิเศษสำหรับ {partnerName}",
+      startDescription:
+        "ช่วยเค้าเก็บหัวใจให้เต็มหลอด 100% เพื่อปลดล็อกข้อความลับสุดพิเศษที่ตั้งใจเขียนให้เธอหน่อยนะ!",
+
+      // ข้อความลอยน่ารักๆ เวลาแตะโดนหัวใจสีชมพู/แดง (+10%)
+      sweetMessages: [
+        "คิดถึงนะ 💗",
+        "คนเก่งของเค้า 🥰",
+        "ยิ้มเยอะๆ นะ 😊",
+        "น่ารักที่สุดเลย!",
+        "ใจละลายแล้วว 💖",
+        "อยู่ด้วยกันไปนานๆ นะ",
+        "รักเธอทุกวันเลย ✨",
+        "เก่งมากเจ้าความรัก!"
+      ],
+
+      // ข้อความพิเศษเวลาแตะโดนหัวใจสีทอง (+20%)
+      goldenMessages: [
+        "พลังรักพุ่งปรี๊ด! +20% ✨",
+        "หัวใจทองคำเพื่อเธอ! 💛",
+        "โบนัสรักหมดใจ! 🌟"
+      ],
+
+      // ข้อความแซวเวลาเผลอกดโดนก้อนเมฆงอน (-5%)
+      cloudMessages: [
+        "อุ๊ย งอนแล้วนะ! 😤",
+        "โอ๋ๆ ไม่กดอันนี้สิ ⛈️",
+        "แง้ โดนเมฆงอนซะแล้ว!",
+        "ใจเย็นๆ อย่ากดเมฆน้าา"
+      ],
+
+      // ข้อความด่านที่ 2 (คำถามวัดใจ)
+      questionTitle: "รักเค้ามั้ย? 🥺💖",
+      questionSubtitle: "ตอบตามความจริงนะ {partnerName}... ห้ามโกหกกันล่ะ!",
+      yesButtonText: "รักมากกก 💖",
+      noButtonInitialText: "ไม่รักหรอก 😜",
+
+      // ข้อความกวนๆ ที่จะเปลี่ยนไปเรื่อยๆ เมื่อปุ่ม "ไม่รักหรอก" วิ่งหนี
+      runawayTexts: [
+        "แน่ใจเหรอ? 🥺",
+        "กดไม่โดนหรอก! 😜",
+        "ยอมแพ้เถอะนะ 💨",
+        "กดปุ่มรักดีกว่าน่าา 💖",
+        "หนีเก่งนะบอกเลย!",
+        "เอ๊ะ มือไวไม่พอหรอก 😝",
+        "ใจอ่อนกดรักได้แล้ว~ 💕"
+      ],
+
+      // ข้อความแซวใต้ปุ่มเมื่อพยายามกดปุ่มไม่รัก
+      dodgeHints: [
+        "แหนะ! จะกดไม่รักจริงๆ เหรอ 🥺",
+        "ปุ่มไม่รักมันไม่ยอมให้กดหรอกนะ~",
+        "ดูปุ่ม 'รักมากกก' สิ ใหญ่ขึ้นเรื่อยๆ แล้วนะ 💖",
+        "ยอมแพ้แล้วมากดรักเค้าเถอะน่าา 🥰"
+      ],
+
+      // ข้อความจดหมายบอกรักในด่านที่ 3
+      letterHeading: "เย้! เค้ารู้อยู่แล้วว่าเธอรักเค้า 💘",
+      letterParagraphs: [
+        "ถึง {partnerName} ที่รัก...",
+        "ขอบคุณนะที่เข้ามาเป็นความสุขและรอยยิ้มในทุกๆ วันของเค้า ไม่ว่าวันไหนจะเหนื่อยหรือเจอเรื่องอะไร แค่มีเธออยู่ข้างๆ โลกทั้งใบก็ดูน่ารักขึ้นมาทันทีเลย",
+        "สัญญาว่าจะคอยดูแล เป็นกำลังใจ และอยู่ข้างๆ เธอแบบนี้ไปนานๆ เลยนะ ดูแลสุขภาพ พักผ่อนเยอะๆ และยิ้มให้กว้างๆ ในทุกวันด้วยล่ะ",
+        "รักเธอมากที่สุดในโลกเลยนะ! 💖✨"
+      ]
+    };
+
+    /* =========================================================================
+       1. ตัวช่วยแทนที่ชื่อแฟนในข้อความ (Helper Function)
+    ========================================================================= */
+    function formatText(template) {
+      return template
+        .replace(/\{partnerName\}/g, LOVE_CONFIG.partnerName)
+        .replace(/\{senderName\}/g, LOVE_CONFIG.senderName);
+    }
+
+    function pickRandom(list) {
+      return list[Math.floor(Math.random() * list.length)];
+    }
+
+    /* =========================================================================
+       2. ระบบเสียงเอฟเฟกต์ด้วย Web Audio API (ไม่ต้องใช้ไฟล์เสียงภายนอก)
+    ========================================================================= */
+    const SoundFX = {
+      ctx: null,
+      enabled: true,
+
+      // สร้างหรือปลุก AudioContext เมื่อผู้ใช้คลิกครั้งแรก
+      init() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) {
+            this.ctx = new AudioCtx();
+          }
+        }
+        if (this.ctx && this.ctx.state === "suspended") {
+          this.ctx.resume().catch(() => {});
+        }
+      },
+
+      // ฟังก์ชันสร้างเสียงโน้ตพื้นฐาน
+      playTone(freqStart, freqEnd, duration, type = "sine", volume = 0.14, delay = 0) {
+        if (!this.enabled) return;
+        try {
+          this.init();
+          if (!this.ctx) return;
+
+          const now = this.ctx.currentTime + delay;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = type;
+          osc.frequency.setValueAtTime(freqStart, now);
+          if (freqEnd !== freqStart) {
+            osc.frequency.exponentialRampToValueAtTime(Math.max(40, freqEnd), now + duration);
+          }
+
+          gain.gain.setValueAtTime(0.001, now);
+          gain.gain.linearRampToValueAtTime(volume, now + 0.015);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(now);
+          osc.stop(now + duration + 0.02);
+        } catch (err) {
+          // ข้ามข้อผิดพลาดกรณีเบราว์เซอร์จำกัดเสียง
+        }
+      },
+
+      // เสียงป๊อปน่ารักตอนเก็บหัวใจสีชมพู
+      popHeart() {
+        this.playTone(520, 880, 0.12, "sine", 0.15);
+      },
+
+      // เสียงวิบวับตอนเก็บหัวใจสีทอง
+      goldenChime() {
+        this.playTone(659.25, 659.25, 0.12, "triangle", 0.14, 0);
+        this.playTone(880, 880, 0.14, "triangle", 0.14, 0.07);
+        this.playTone(1318.5, 1318.5, 0.22, "sine", 0.15, 0.14);
+      },
+
+      // เสียงตุ้บเบาๆ ตอนกดโดนก้อนเมฆงอน
+      cloudBonk() {
+        this.playTone(230, 120, 0.18, "sawtooth", 0.08);
+      },
+
+      // เสียงเด้งดึ๋งตอนปุ่ม "ไม่รักหรอก" วิ่งหนี
+      dodgeBoing() {
+        this.playTone(300, 620, 0.14, "triangle", 0.13);
+      },
+
+      // เสียงอบอุ่นตอนกดส่งกอด
+      hugChime() {
+        this.playTone(523.25, 659.25, 0.16, "sine", 0.13, 0);
+        this.playTone(783.99, 1046.5, 0.22, "sine", 0.12, 0.08);
+      },
+
+      // เสียงเมโลดี้ฉลองตอนผ่านด่าน / กดรักมากกก
+      victoryMelody() {
+        const notes = [523.25, 659.25, 783.99, 1046.5, 987.77, 1046.5];
+        const times = [0, 0.11, 0.22, 0.34, 0.48, 0.6];
+        notes.forEach((freq, i) => {
+          this.playTone(freq, freq, i === notes.length - 1 ? 0.42 : 0.16, "triangle", 0.15, times[i]);
+        });
+      }
+    };
+
+    /* =========================================================================
+       3. อ้างอิง DOM Elements และสถานะของเกม (Game State)
+    ========================================================================= */
+    const screens = {
+      start: document.getElementById("screen-start"),
+      game: document.getElementById("screen-game"),
+      question: document.getElementById("screen-question"),
+      letter: document.getElementById("screen-letter")
+    };
+
+    const dom = {
+      bgHeartsLayer: document.getElementById("bg-hearts-layer"),
+      btnSoundToggle: document.getElementById("btn-sound-toggle"),
+      soundIcon: document.getElementById("sound-icon"),
+      soundLabel: document.getElementById("sound-label"),
+
+      // หน้าแรก
+      startBadge: document.getElementById("start-badge"),
+      startTitle: document.getElementById("start-title"),
+      startDesc: document.getElementById("start-desc"),
+      btnStartGame: document.getElementById("btn-start-game"),
+
+      // ด่านที่ 1
+      meterPercentText: document.getElementById("meter-percent-text"),
+      heartCountText: document.getElementById("heart-count-text"),
+      meterFill: document.getElementById("meter-fill"),
+      loveMeterBar: document.getElementById("love-meter-bar"),
+      gameArena: document.getElementById("game-arena"),
+      stageClearOverlay: document.getElementById("stage-clear-overlay"),
+
+      // ด่านที่ 2
+      questionTitle: document.getElementById("question-title"),
+      questionSubtitle: document.getElementById("question-subtitle"),
+      btnYes: document.getElementById("btn-yes"),
+      btnNo: document.getElementById("btn-no"),
+      dodgeHint: document.getElementById("dodge-hint"),
+
+      // ด่านที่ 3
+      letterHeading: document.getElementById("letter-heading"),
+      letterBody: document.getElementById("letter-body"),
+      hugCounterPill: document.getElementById("hug-counter-pill"),
+      hugCountNum: document.getElementById("hug-count-num"),
+      btnSendHug: document.getElementById("btn-send-hug"),
+      btnPlayAgain: document.getElementById("btn-play-again"),
+      canvas: document.getElementById("celebration-canvas")
+    };
+
+    // เก็บตัวแปรสถานะทั้งหมดของเกมไว้ที่เดียวเพื่อความสะอาดและรีเซ็ตได้ง่าย
+    const gameState = {
+      currentScreen: "start",
+      lovePercent: 0,
+      heartsCollected: 0,
+      isStage1Clearing: false,
+      spawnIntervalId: null,
+      animationFrameId: null,
+      activeItems: [],
+      stageTransitionTimer: null,
+      dodgeCount: 0,
+      hugCount: 0,
+      confettiFrameId: null,
+      confettiParticles: []
+    };
+
+    /* =========================================================================
+       4. ตั้งค่าข้อความเริ่มต้นจาก LOVE_CONFIG และสร้างหัวใจลอยพื้นหลัง
+    ========================================================================= */
+    function applyConfigToUI() {
+      document.title = LOVE_CONFIG.gameTitle;
+      dom.startBadge.textContent = formatText(LOVE_CONFIG.startBadge);
+      dom.startTitle.textContent = LOVE_CONFIG.gameTitle;
+      dom.startDesc.textContent = formatText(LOVE_CONFIG.startDescription);
+
+      dom.questionTitle.textContent = formatText(LOVE_CONFIG.questionTitle);
+      dom.questionSubtitle.textContent = formatText(LOVE_CONFIG.questionSubtitle);
+      dom.btnYes.textContent = LOVE_CONFIG.yesButtonText;
+      dom.btnNo.textContent = LOVE_CONFIG.noButtonInitialText;
+
+      dom.letterHeading.textContent = formatText(LOVE_CONFIG.letterHeading);
+
+      // สร้างย่อหน้าของจดหมายบอกรักลงในกระดาษจดหมาย
+      dom.letterBody.innerHTML = "";
+      LOVE_CONFIG.letterParagraphs.forEach((paragraph) => {
+        const p = document.createElement("p");
+        p.textContent = formatText(paragraph);
+        dom.letterBody.appendChild(p);
+      });
+
+      const sig = document.createElement("div");
+      sig.className = "letter-signature";
+      sig.textContent = "— " + formatText(LOVE_CONFIG.senderName);
+      dom.letterBody.appendChild(sig);
+    }
+
+    function createBackgroundHearts() {
+      const heartEmojis = ["💖", "💕", "💗", "🌸", "🤍"];
+      const total = 16;
+
+      for (let i = 0; i < total; i++) {
+        const el = document.createElement("span");
+        el.className = "bg-heart";
+        el.textContent = pickRandom(heartEmojis);
+        el.style.left = `${Math.random() * 96}%`;
+        el.style.fontSize = `${14 + Math.random() * 22}px`;
+        el.style.animationDuration = `${8 + Math.random() * 10}s`;
+        el.style.animationDelay = `${Math.random() * 10}s`;
+        dom.bgHeartsLayer.appendChild(el);
+      }
+    }
+
+    /* =========================================================================
+       5. ฟังก์ชันสลับหน้าจออย่างนุ่มนวลและเคลียร์การทำงานเก่า
+    ========================================================================= */
+    function stopStage1Loops() {
+      if (gameState.spawnIntervalId) {
+        clearInterval(gameState.spawnIntervalId);
+        gameState.spawnIntervalId = null;
+      }
+      if (gameState.animationFrameId) {
+        cancelAnimationFrame(gameState.animationFrameId);
+        gameState.animationFrameId = null;
+      }
+      if (gameState.stageTransitionTimer) {
+        clearTimeout(gameState.stageTransitionTimer);
+        gameState.stageTransitionTimer = null;
+      }
+      // ลบไอเทมที่ค้างอยู่ในพื้นที่เล่นออกทั้งหมด
+      gameState.activeItems.forEach((item) => {
+        if (item.el && item.el.parentNode) {
+          item.el.remove();
+        }
+      });
+      gameState.activeItems = [];
+    }
+
+    function showScreen(targetName) {
+      gameState.currentScreen = targetName;
+      Object.keys(screens).forEach((key) => {
+        if (key === targetName) {
+          screens[key].classList.add("active");
+        } else {
+          screens[key].classList.remove("active");
+        }
+      });
+    }
+
+    /* =========================================================================
+       6. ด่านที่ 1: มินิเกมเก็บหัวใจ (Catch the Hearts)
+    ========================================================================= */
+    function startStage1() {
+      stopStage1Loops();
+      stopConfetti();
+
+      // รีเซ็ตค่าคะแนนและหลอดพลังรัก
+      gameState.lovePercent = 0;
+      gameState.heartsCollected = 0;
+      gameState.isStage1Clearing = false;
+      dom.stageClearOverlay.classList.remove("show");
+      updateLoveMeterUI();
+
+      showScreen("game");
+
+      // เริ่มสุ่มสร้างไอเทมทุกๆ 680 มิลลิวินาที (ใช้ setInterval ตามโจทย์)
+      spawnArenaItem(); // เกิดทันที 1 ชิ้นจะได้ไม่รอนาน
+      gameState.spawnIntervalId = setInterval(() => {
+        if (!gameState.isStage1Clearing && gameState.currentScreen === "game") {
+          spawnArenaItem();
+        }
+      }, 680);
+
+      // เริ่มลูปขยับไอเทมให้ลอยขึ้นอย่างลื่นไหล
+      let lastTime = performance.now();
+      function updateItemsLoop(now) {
+        const dt = Math.min(0.05, (now - lastTime) / 1000);
+        lastTime = now;
+
+        const arenaHeight = dom.gameArena.clientHeight || 400;
+
+        for (let i = gameState.activeItems.length - 1; i >= 0; i--) {
+          const item = gameState.activeItems[i];
+          if (item.collected) {
+            gameState.activeItems.splice(i, 1);
+            continue;
+          }
+
+          // คำนวณตำแหน่งลอยขึ้น + ส่ายซ้ายขวาเบาๆ
+          item.y += item.speed * dt;
+          item.age += dt;
+          const swayX = Math.sin(item.age * item.swayFreq + item.swayPhase) * item.swayAmp;
+
+          item.el.style.bottom = `${item.y}px`;
+          item.el.style.transform = `translateX(${swayX}px)`;
+
+          // หากลอยพ้นขอบด้านบนแล้ว ให้ลบออกจาก DOM
+          if (item.y > arenaHeight + 90) {
+            item.el.remove();
+            gameState.activeItems.splice(i, 1);
+          }
+        }
+
+        if (gameState.currentScreen === "game") {
+          gameState.animationFrameId = requestAnimationFrame(updateItemsLoop);
+        }
+      }
+
+      gameState.animationFrameId = requestAnimationFrame(updateItemsLoop);
+    }
+
+    // ฟังก์ชันสุ่มเกิดไอเทม 3 แบบ (หัวใจปกติ, หัวใจทอง, ก้อนเมฆงอน)
+    function spawnArenaItem() {
+      const arenaWidth = dom.gameArena.clientWidth || 320;
+      const roll = Math.random();
+
+      let type = "normal";
+      let emoji = Math.random() < 0.5 ? "💖" : "❤️";
+      let speed = 115 + Math.random() * 75;
+
+      if (roll < 0.16) {
+        // โอกาส 16% เกิดหัวใจสีทอง (+20%)
+        type = "golden";
+        emoji = "💛";
+        speed = 155 + Math.random() * 70;
+      } else if (roll < 0.36) {
+        // โอกาส 20% เกิดก้อนเมฆงอน (-5%)
+        type = "cloud";
+        emoji = Math.random() < 0.55 ? "⛈️" : "😤";
+        speed = 105 + Math.random() * 65;
+      }
+
+      const itemEl = document.createElement("div");
+      itemEl.className = `spawn-item ${type}`;
+      itemEl.textContent = emoji;
+
+      // สุ่มตำแหน่งแนวนอนไม่ให้ชิดขอบเกินไป
+      const paddingX = 36;
+      const maxLeft = Math.max(paddingX, arenaWidth - 78);
+      const startLeft = paddingX * 0.5 + Math.random() * (maxLeft - paddingX * 0.5);
+      itemEl.style.left = `${startLeft}px`;
+      itemEl.style.bottom = "-70px";
+
+      const itemObj = {
+        el: itemEl,
+        type,
+        y: -70,
+        speed,
+        age: 0,
+        swayFreq: 2 + Math.random() * 2,
+        swayAmp: 12 + Math.random() * 16,
+        swayPhase: Math.random() * Math.PI * 2,
+        collected: false
+      };
+
+      // รองรับทั้งการคลิกเมาส์และการแตะบนมือถือแบบตอบสนองทันทีด้วย pointerdown
+      itemEl.addEventListener("pointerdown", (e) => {
+        e.preventDefault();
+        if (itemObj.collected || gameState.isStage1Clearing) return;
+        handleItemHit(itemObj, e);
+      });
+
+      dom.gameArena.appendChild(itemEl);
+      gameState.activeItems.push(itemObj);
+    }
+
+    // จัดการเหตุการณ์เมื่อผู้เล่นกดโดนไอเทม
+    function handleItemHit(itemObj) {
+      itemObj.collected = true;
+
+      // หาตำแหน่งกึ่งกลางของไอเทมเทียบกับกรอบพื้นที่เล่น
+      const arenaRect = dom.gameArena.getBoundingClientRect();
+      const itemRect = itemObj.el.getBoundingClientRect();
+      const centerX = itemRect.left - arenaRect.left + itemRect.width / 2;
+      const centerY = itemRect.top - arenaRect.top + itemRect.height / 2;
+
+      // ลบตัวไอเทมออก
+      itemObj.el.remove();
+
+      if (itemObj.type === "normal") {
+        // หัวใจสีชมพู/แดง: +10%
+        gameState.lovePercent = Math.min(100, gameState.lovePercent + 10);
+        gameState.heartsCollected += 1;
+        SoundFX.popHeart();
+        spawnFloatingFeedback(centerX, centerY, pickRandom(LOVE_CONFIG.sweetMessages), "sweet");
+        spawnPopParticles(centerX, centerY, ["💖", "💕", "✨"]);
+      } else if (itemObj.type === "golden") {
+        // หัวใจสีทอง: +20%
+        gameState.lovePercent = Math.min(100, gameState.lovePercent + 20);
+        gameState.heartsCollected += 1;
+        SoundFX.goldenChime();
+        spawnFloatingFeedback(centerX, centerY, pickRandom(LOVE_CONFIG.goldenMessages), "golden");
+        spawnPopParticles(centerX, centerY, ["💛", "✨", "⭐", "🌟"]);
+      } else {
+        // ก้อนเมฆงอน: -5% และหน้าจอสั่นเบาๆ
+        gameState.lovePercent = Math.max(0, gameState.lovePercent - 5);
+        SoundFX.cloudBonk();
+        spawnFloatingFeedback(centerX, centerY, pickRandom(LOVE_CONFIG.cloudMessages), "tease");
+        spawnPopParticles(centerX, centerY, ["💨", "💢", "☁️"]);
+        triggerArenaShake();
+      }
+
+      updateLoveMeterUI();
+
+      // ตรวจสอบว่าหลอดความรักเต็ม 100% หรือยัง
+      if (gameState.lovePercent >= 100 && !gameState.isStage1Clearing) {
+        completeStage1();
+      }
+    }
+
+    function updateLoveMeterUI() {
+      dom.meterPercentText.textContent = `${gameState.lovePercent}%`;
+      dom.heartCountText.textContent = gameState.heartsCollected;
+      dom.meterFill.style.width = `${gameState.lovePercent}%`;
+      dom.loveMeterBar.setAttribute("aria-valuenow", String(gameState.lovePercent));
+    }
+
+    function triggerArenaShake() {
+      dom.gameArena.classList.remove("shake");
+      // บังคับรีโฟลว์เพื่อให้เล่นอนิเมชันสั่นซ้ำได้ทันที
+      void dom.gameArena.offsetWidth;
+      dom.gameArena.classList.add("shake");
+    }
+
+    // แสดงข้อความลอยน่ารักๆ ณ ตำแหน่งที่กด
+    function spawnFloatingFeedback(x, y, text, styleClass) {
+      const fb = document.createElement("div");
+      fb.className = `floating-feedback ${styleClass}`;
+      fb.textContent = text;
+
+      // จำกัดไม่ให้ข้อความลอยชิดขอบซ้าย/ขวามากเกินไปจนอ่านไม่ครบ
+      const arenaWidth = dom.gameArena.clientWidth || 320;
+      const safeX = Math.max(76, Math.min(arenaWidth - 76, x));
+      const safeY = Math.max(36, y);
+
+      fb.style.left = `${safeX}px`;
+      fb.style.top = `${safeY}px`;
+      dom.gameArena.appendChild(fb);
+
+      setTimeout(() => fb.remove(), 1150);
+    }
+
+    // สร้างเอฟเฟกต์แตกกระจายตอนแตะไอเทม
+    function spawnPopParticles(x, y, symbols) {
+      const count = 7;
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement("span");
+        p.className = "pop-particle";
+        p.textContent = pickRandom(symbols);
+        const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.5;
+        const dist = 36 + Math.random() * 44;
+        const tx = Math.cos(angle) * dist;
+        const ty = Math.sin(angle) * dist;
+        const rot = `${Math.floor(Math.random() * 140 - 70)}deg`;
+
+        p.style.left = `${x}px`;
+        p.style.top = `${y}px`;
+        p.style.setProperty("--tx", `${tx}px`);
+        p.style.setProperty("--ty", `${ty}px`);
+        p.style.setProperty("--rot", rot);
+
+        dom.gameArena.appendChild(p);
+        setTimeout(() => p.remove(), 680);
+      }
+    }
+
+    function completeStage1() {
+      gameState.isStage1Clearing = true;
+      stopStage1Loops();
+      SoundFX.victoryMelody();
+      dom.stageClearOverlay.classList.add("show");
+
+      // หน่วงเวลา 1.45 วินาทีให้เห็นหน้าฉลองสั้นๆ แล้วเข้าด่านที่ 2 อัตโนมัติ
+      gameState.stageTransitionTimer = setTimeout(() => {
+        startStage2();
+      }, 1450);
+    }
+
+    /* =========================================================================
+       7. ด่านที่ 2: คำถามวัดใจ (ปุ่ม "ไม่รักหรอก" วิ่งหนี + ปุ่ม "รักมากกก" ขยายใหญ่)
+    ========================================================================= */
+    function resetStage2Buttons() {
+      gameState.dodgeCount = 0;
+      dom.btnNo.classList.remove("dodging");
+      dom.btnNo.style.left = "";
+      dom.btnNo.style.top = "";
+      dom.btnNo.textContent = LOVE_CONFIG.noButtonInitialText;
+      dom.btnYes.style.transform = "scale(1)";
+      dom.dodgeHint.textContent = "";
+    }
+
+    function startStage2() {
+      resetStage2Buttons();
+      showScreen("question");
+    }
+
+    // ฟังก์ชันย้ายปุ่ม "ไม่รักหรอก" ไปยังตำแหน่งสุ่มที่ปลอดภัยภายในหน้าจอ
+    function dodgeNoButton(event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      if (gameState.currentScreen !== "question") return;
+
+      gameState.dodgeCount += 1;
+      SoundFX.dodgeBoing();
+
+      // เปลี่ยนข้อความกวนๆ บนปุ่มก่อนวัดขนาด เพื่อไม่ให้ปุ่มล้นขอบจอเมื่อข้อความยาวขึ้น
+      const textIdx = (gameState.dodgeCount - 1) % LOVE_CONFIG.runawayTexts.length;
+      dom.btnNo.textContent = LOVE_CONFIG.runawayTexts[textIdx];
+
+      // อัปเดตข้อความแซวใต้ปุ่ม
+      const hintIdx = Math.min(gameState.dodgeCount - 1, LOVE_CONFIG.dodgeHints.length - 1);
+      dom.dodgeHint.textContent = LOVE_CONFIG.dodgeHints[hintIdx];
+
+      // ขยายขนาดปุ่ม "รักมากกก 💖" ขึ้นทุกครั้งที่ปุ่มไม่รักหนี (จำกัดสูงสุดที่ 1.65 เท่าไม่ให้ล้นมือถือ)
+      const nextScale = Math.min(1.65, 1 + gameState.dodgeCount * 0.11);
+      dom.btnYes.style.transform = `scale(${nextScale})`;
+
+      // เปิดโหมด position: fixed เพื่อให้วิ่งหนีได้อย่างอิสระในกรอบหน้าจอ
+      if (!dom.btnNo.classList.contains("dodging")) {
+        const rect = dom.btnNo.getBoundingClientRect();
+        dom.btnNo.classList.add("dodging");
+        dom.btnNo.style.left = `${rect.left}px`;
+        dom.btnNo.style.top = `${rect.top}px`;
+      }
+
+      // คำนวณพื้นที่ปลอดภัยภายในหน้าจอ (ไม่ชนขอบและไม่ทับปุ่มเปิดเสียงด้านบน)
+      const margin = 16;
+      const topSafe = 66;
+      const btnW = dom.btnNo.offsetWidth || 140;
+      const btnH = dom.btnNo.offsetHeight || 50;
+
+      const maxX = Math.max(margin, window.innerWidth - btnW - margin);
+      const maxY = Math.max(topSafe, window.innerHeight - btnH - margin);
+
+      const yesRect = dom.btnYes.getBoundingClientRect();
+      let chosenX = margin;
+      let chosenY = topSafe;
+
+      // สุ่มหาตำแหน่งสูงสุด 18 ครั้งเพื่อหลีกเลี่ยงไม่ให้ปุ่มไม่รักไปทับปุ่ม "รักมากกก"
+      for (let attempt = 0; attempt < 18; attempt++) {
+        const rx = margin + Math.random() * Math.max(1, maxX - margin);
+        const ry = topSafe + Math.random() * Math.max(1, maxY - topSafe);
+
+        const overlapsYes =
+          rx < yesRect.right + 16 &&
+          rx + btnW > yesRect.left - 16 &&
+          ry < yesRect.bottom + 16 &&
+          ry + btnH > yesRect.top - 16;
+
+        chosenX = rx;
+        chosenY = ry;
+
+        if (!overlapsYes) break;
+      }
+
+      dom.btnNo.style.left = `${Math.round(chosenX)}px`;
+      dom.btnNo.style.top = `${Math.round(chosenY)}px`;
+    }
+
+    // คอยดึงปุ่มกลับเข้าขอบจอ หากผู้ใช้หมุนจอมือถือหรือย่อหน้าต่างเบราว์เซอร์
+    function clampNoButtonInsideViewport() {
+      if (!dom.btnNo.classList.contains("dodging")) return;
+      const margin = 16;
+      const topSafe = 66;
+      const btnW = dom.btnNo.offsetWidth || 140;
+      const btnH = dom.btnNo.offsetHeight || 50;
+      const currentLeft = parseFloat(dom.btnNo.style.left) || margin;
+      const currentTop = parseFloat(dom.btnNo.style.top) || topSafe;
+
+      const clampedX = Math.max(margin, Math.min(window.innerWidth - btnW - margin, currentLeft));
+      const clampedY = Math.max(topSafe, Math.min(window.innerHeight - btnH - margin, currentTop));
+
+      dom.btnNo.style.left = `${clampedX}px`;
+      dom.btnNo.style.top = `${clampedY}px`;
+    }
+
+    // ป้องกันการทริกเกอร์ซ้ำบนมือถือ: ใช้ pointerenter เฉพาะเมาส์ และ touchstart/click สำหรับการแตะ
+    dom.btnNo.addEventListener("pointerenter", (e) => {
+      if (e.pointerType === "mouse") {
+        dodgeNoButton(e);
+      }
+    });
+    dom.btnNo.addEventListener("touchstart", (e) => {
+      dodgeNoButton(e);
+    }, { passive: false });
+    dom.btnNo.addEventListener("click", (e) => {
+      dodgeNoButton(e);
+    });
+
+    /* =========================================================================
+       8. ด่านที่ 3: หน้าบอกรัก พลุหัวใจ Canvas และปุ่มส่งกอด
+    ========================================================================= */
+    function startStage3() {
+      // เก็บปุ่มหนีให้เรียบร้อยก่อนเปลี่ยนหน้า
+      resetStage2Buttons();
+      gameState.hugCount = 0;
+      dom.hugCountNum.textContent = "0";
+
+      SoundFX.victoryMelody();
+      showScreen("letter");
+      startConfettiCelebration();
+    }
+
+    // ฟังก์ชันเมื่อกดปุ่ม "ส่งกอด 🫂"
+    function handleSendHug() {
+      gameState.hugCount += 1;
+      dom.hugCountNum.textContent = gameState.hugCount;
+      SoundFX.hugChime();
+
+      // ทำเอฟเฟกต์เด้งที่ตัวนับกอด
+      dom.hugCounterPill.classList.remove("bump");
+      void dom.hugCounterPill.offsetWidth;
+      dom.hugCounterPill.classList.add("bump");
+      setTimeout(() => dom.hugCounterPill.classList.remove("bump"), 220);
+
+      // ปล่อยอีโมจิกอดและหัวใจพุ่งขึ้นจากตำแหน่งปุ่ม
+      const btnRect = dom.btnSendHug.getBoundingClientRect();
+      const originX = btnRect.left + btnRect.width / 2;
+      const originY = btnRect.top + 8;
+      const hugSymbols = ["🫂", "💖", "🥰", "💕", "✨", "❤️"];
+
+      for (let i = 0; i < 6; i++) {
+        const el = document.createElement("span");
+        el.className = "flying-hug";
+        el.textContent = pickRandom(hugSymbols);
+        el.style.left = `${originX + (Math.random() - 0.5) * 80}px`;
+        el.style.top = `${originY}px`;
+        el.style.setProperty("--hug-x", `${(Math.random() - 0.5) * 140}px`);
+        el.style.setProperty("--hug-rot", `${Math.floor(Math.random() * 40 - 20)}deg`);
+        el.style.animationDelay = `${i * 0.05}s`;
+        document.body.appendChild(el);
+
+        setTimeout(() => el.remove(), 1650);
+      }
+
+      // ยิงพลุหัวใจเพิ่มบนแคนวาส
+      addConfettiBurst(originX, originY, 18);
+    }
+
+    /* =========================================================================
+       9. ระบบแคนวาสพลุหัวใจและกระดาษโปรย (Confetti & Hearts Canvas Animation)
+    ========================================================================= */
+    const ctx = dom.canvas.getContext("2d");
+
+    function resizeCanvas() {
+      dom.canvas.width = window.innerWidth;
+      dom.canvas.height = window.innerHeight;
+    }
+
+    function addConfettiBurst(originX, originY, count = 45) {
+      const colors = ["#ff5c8a", "#ff8fab", "#ffb703", "#ff4d6d", "#c77dff", "#ffccd5", "#fff0f3"];
+      for (let i = 0; i < count; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 2.5 + Math.random() * 6.5;
+        gameState.confettiParticles.push({
+          x: originX,
+          y: originY,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - 3.2,
+          gravity: 0.11 + Math.random() * 0.06,
+          size: 7 + Math.random() * 9,
+          color: pickRandom(colors),
+          shape: Math.random() < 0.55 ? "heart" : "rect",
+          rotation: Math.random() * Math.PI * 2,
+          rotSpeed: (Math.random() - 0.5) * 0.18,
+          alpha: 1
+        });
+      }
+    }
+
+    // วาดรูปหัวใจลงบน Canvas ด้วย Bezier Curves
+    function drawCanvasHeart(context, size, color) {
+      context.fillStyle = color;
+      context.beginPath();
+      const topCurveHeight = size * 0.3;
+      context.moveTo(0, topCurveHeight);
+      context.bezierCurveTo(0, 0, -size / 2, 0, -size / 2, topCurveHeight);
+      context.bezierCurveTo(-size / 2, (size + topCurveHeight) / 2, 0, (size + topCurveHeight) / 1.15, 0, size);
+      context.bezierCurveTo(0, (size + topCurveHeight) / 1.15, size / 2, (size + topCurveHeight) / 2, size / 2, topCurveHeight);
+      context.bezierCurveTo(size / 2, 0, 0, 0, 0, topCurveHeight);
+      context.closePath();
+      context.fill();
+    }
+
+    function startConfettiCelebration() {
+      stopConfetti();
+      resizeCanvas();
+      dom.canvas.style.display = "block";
+      gameState.confettiParticles = [];
+
+      // ยิงพลุเปิดฉาก 3 จุดทั่วหน้าจอ
+      addConfettiBurst(window.innerWidth * 0.5, window.innerHeight * 0.35, 60);
+      addConfettiBurst(window.innerWidth * 0.22, window.innerHeight * 0.45, 35);
+      addConfettiBurst(window.innerWidth * 0.78, window.innerHeight * 0.45, 35);
+
+      let frameTick = 0;
+
+      function animateConfetti() {
+        ctx.clearRect(0, 0, dom.canvas.width, dom.canvas.height);
+        frameTick += 1;
+
+        // โปรยหัวใจลงมาจากด้านบนเป็นระยะๆ ให้บรรยากาศอบอุ่นต่อเนื่อง
+        if (frameTick % 14 === 0 && gameState.confettiParticles.length < 150) {
+          gameState.confettiParticles.push({
+            x: Math.random() * dom.canvas.width,
+            y: -15,
+            vx: (Math.random() - 0.5) * 1.4,
+            vy: 1.5 + Math.random() * 2.2,
+            gravity: 0.015,
+            size: 8 + Math.random() * 9,
+            color: pickRandom(["#ff5c8a", "#ff8fab", "#ffb703", "#ff4d6d", "#ffc2d4"]),
+            shape: Math.random() < 0.65 ? "heart" : "rect",
+            rotation: Math.random() * Math.PI * 2,
+            rotSpeed: (Math.random() - 0.5) * 0.08,
+            alpha: 0.92
+          });
+        }
+
+        for (let i = gameState.confettiParticles.length - 1; i >= 0; i--) {
+          const p = gameState.confettiParticles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += p.gravity;
+          p.rotation += p.rotSpeed;
+
+          if (p.y > dom.canvas.height + 30) {
+            gameState.confettiParticles.splice(i, 1);
+            continue;
+          }
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rotation);
+          ctx.globalAlpha = p.alpha;
+
+          if (p.shape === "heart") {
+            drawCanvasHeart(ctx, p.size, p.color);
+          } else {
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.size / 2, -p.size / 3, p.size, p.size * 0.6);
+          }
+          ctx.restore();
+        }
+
+        if (gameState.currentScreen === "letter") {
+          gameState.confettiFrameId = requestAnimationFrame(animateConfetti);
+        }
+      }
+
+      gameState.confettiFrameId = requestAnimationFrame(animateConfetti);
+    }
+
+    function stopConfetti() {
+      if (gameState.confettiFrameId) {
+        cancelAnimationFrame(gameState.confettiFrameId);
+        gameState.confettiFrameId = null;
+      }
+      gameState.confettiParticles = [];
+      ctx.clearRect(0, 0, dom.canvas.width, dom.canvas.height);
+      dom.canvas.style.display = "none";
+    }
+
+    /* =========================================================================
+       10. ผูก Event Listeners ของปุ่มต่างๆ และการเริ่มต้นแอป
+    ========================================================================= */
+    // ปุ่มเปิด/ปิดเสียง
+    dom.btnSoundToggle.addEventListener("click", () => {
+      SoundFX.enabled = !SoundFX.enabled;
+      dom.soundIcon.textContent = SoundFX.enabled ? "🔊" : "🔇";
+      dom.soundLabel.textContent = SoundFX.enabled ? "เสียง: เปิด" : "เสียง: ปิด";
+      if (SoundFX.enabled) {
+        SoundFX.popHeart();
+      }
+    });
+
+    // ปุ่มเริ่มเกม
+    dom.btnStartGame.addEventListener("click", () => {
+      SoundFX.init();
+      SoundFX.popHeart();
+      startStage1();
+    });
+
+    // ปุ่ม "รักมากกก 💖" ในด่านที่ 2
+    dom.btnYes.addEventListener("click", () => {
+      startStage3();
+    });
+
+    // ปุ่ม "ส่งกอด 🫂" ในด่านที่ 3
+    dom.btnSendHug.addEventListener("click", () => {
+      handleSendHug();
+    });
+
+    // ปุ่ม "เล่นใหม่อีกครั้ง ↻"
+    dom.btnPlayAgain.addEventListener("click", () => {
+      SoundFX.popHeart();
+      stopStage1Loops();
+      stopConfetti();
+      resetStage2Buttons();
+      showScreen("start");
+    });
+
+    // ปรับขนาดแคนวาสและตำแหน่งปุ่มหนีเมื่อหน้าจอเปลี่ยนขนาด
+    window.addEventListener("resize", () => {
+      resizeCanvas();
+      clampNoButtonInsideViewport();
+    });
+
+    // เริ่มต้นระบบเมื่อโหลดหน้าเว็บเสร็จสมบูรณ์
+    window.addEventListener("load", () => {
+      applyConfigToUI();
+      createBackgroundHearts();
+      resizeCanvas();
+    });
+  </script>
+</body>
+</html>
